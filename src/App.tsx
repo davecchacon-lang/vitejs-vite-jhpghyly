@@ -382,7 +382,7 @@ const PublishView = ({ user, onNav }) => {
   const set = (k, v) => setForm((f) => ({ ...f, [k]: v }));
   const cfg = cat ? FORM_CATS[cat] : null;
 
-  const // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const handleFiles = (files: FileList) => {
 const handleFiles = (files: any) => {
     const newPhotos = Array.from(files).slice(0, 10 - photos.length).map(f => ({ file: f, url: URL.createObjectURL(f) }));
     setPhotos(p => [...p, ...newPhotos]);
