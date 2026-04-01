@@ -270,7 +270,7 @@ const S = `
   --amber:#D97706;--amber-soft:#FFFBEB;
   --red:#DC2626;
 }
-body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--ink);}
+*{box-sizing:border-box;margin:0;padding:0;}html,body,#root{width:100%;min-height:100vh;}
 
 /* NAV */
 .nav{
