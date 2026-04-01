@@ -492,8 +492,8 @@ const PublishView = ({ user, onNav }) => {
               className={`upload-zone ${drag ? 'drag' : ''}`}
               onDragOver={(e) => { e.preventDefault(); setDrag(true); }}
               onDragLeave={() => setDrag(false)}
-              onDrop={(e) => { e.preventDefault(); setDrag(false); handleFiles(e.dataTransfer.files); }}
-              onClick={() => { const i = document.createElement('input'); i.type = 'file'; i.multiple = true; i.accept = 'image/*'; i.onchange = (e) => handleFiles(e.target.files); i.click(); }}
+              onDrop={(e) => { e.preventDefault(); setDrag(false); handleFiles(e.dataTransfer.files as unknown as FileList); }}
+              onClick={() => { const i = document.createElement('input'); i.type = 'file'; i.multiple = true; i.accept = 'image/*'; i.onchange = (e) => handleFiles((e.target as HTMLInputElement).files); i.click(); }}
             >
               <div style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>↑</div>
               <div style={{ fontWeight: 500, fontSize: '0.875rem' }}>Arrastrá fotos aquí o hacé click para subir</div>
