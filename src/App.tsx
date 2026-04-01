@@ -531,7 +531,7 @@ const HomeView = ({ onNav }) => {
 const PublishView = ({ onNav }) => {
   const [cat, setCat] = useState('');
   const [form, setForm] = useState({ sub: '', op: '', title: '', price: '', province: 'San José', canton: '', desc: '', phone: '', email: '' });
-  const [done, setDone] = useState(false);
+  const [done, setDone] = useState(false); const [loading, setLoading] = useState(false); const [error, setError] = useState('');
   const set = (k, v) => setForm((f) => ({ ...f, [k]: v }));
   const cfg = cat ? FORM_CATS[cat] : null;
 
@@ -631,7 +631,7 @@ const PublishView = ({ onNav }) => {
               </div>
             </div>
           </div>
-          <button className="fsubmit" onClick={() => form.title && form.price && setDone(true)}>Publicar anuncio gratis</button>
+          <button className="fsubmit" onClick={async () => {   if (!form.title || !form.price || !form.canton) return;   setLoading(true);   const { error } = await supabase.from('listings').insert({     title: form.title, cat, sub: form.sub, op: form.op,     price: parseFloat(form.price), currency: 'USD',     province: form.province, canton: form.canton,     description: form.desc, phone: form.phone, email: form.email,     status: 'activo', featured: false,   });   setLoading(false);   if (error) setError('Error al publicar. Intenta de nuevo.');   else setDone(true); }}disabled={loading}>{loading ? 'Publicando...' : 'Publicar anuncio gratis'}</button>
           <p style={{ textAlign: 'center', fontSize: '0.75rem', color: 'var(--ink3)', marginTop: '0.75rem' }}>Al publicar aceptás los Términos de Uso. Publicación básica gratuita.</p>
         </>
       )}
