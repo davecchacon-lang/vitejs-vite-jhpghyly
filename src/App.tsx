@@ -493,7 +493,7 @@ const PublishView = ({ user, onNav }) => {
               onDragOver={(e) => { e.preventDefault(); setDrag(true); }}
               onDragLeave={() => setDrag(false)}
               onDrop={(e) => { e.preventDefault(); setDrag(false); handleFiles(e.dataTransfer.files as unknown as FileList); }}
-              onClick={() => { const i = document.createElement('input'); i.type = 'file'; i.multiple = true; i.accept = 'image/*'; i.onchange = (e) => handleFiles((e.target as HTMLInputElement).files); i.click(); }}
+i.onchange = (e) => { const files = (e.target as HTMLInputElement).files; if (files) handleFiles(files); };
             >
               <div style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>↑</div>
               <div style={{ fontWeight: 500, fontSize: '0.875rem' }}>Arrastrá fotos aquí o hacé click para subir</div>
