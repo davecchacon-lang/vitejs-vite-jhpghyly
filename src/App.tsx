@@ -1,212 +1,19 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { supabase } from './supabase';
 
-// ─── MOCK DATA ────────────────────────────────────────────────────────────────
 const LISTINGS = [
-  {
-    id: 1,
-    cat: 'bienes-raices',
-    sub: 'Casa',
-    op: 'Venta',
-    title: 'Casa en Escazú, 3 hab',
-    price: 485000,
-    currency: 'USD',
-    province: 'San José',
-    canton: 'Escazú',
-    img: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=500&q=80',
-    date: 'hace 2 días',
-    owner: 'Carlos M.',
-    phone: '+506 8888-1234',
-    featured: true,
-    detail: 'Casa de 320m² en zona residencial, 3 hab, 2 baños, cochera doble, jardín.',
-  },
-  {
-    id: 2,
-    cat: 'bienes-raices',
-    sub: 'Apartamento',
-    op: 'Alquiler',
-    title: 'Apto en Heredia, 2 hab',
-    price: 750,
-    currency: 'USD',
-    province: 'Heredia',
-    canton: 'Heredia',
-    img: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=500&q=80',
-    date: 'hace 1 día',
-    owner: 'Sofía C.',
-    phone: '+506 8777-5678',
-    featured: false,
-    detail: 'Apartamento moderno, 85m², 2 hab, 1 baño, incluye agua y cable.',
-  },
-  {
-    id: 3,
-    cat: 'bienes-raices',
-    sub: 'Lote',
-    op: 'Venta',
-    title: 'Lote en Tamarindo 1200m²',
-    price: 95000,
-    currency: 'USD',
-    province: 'Guanacaste',
-    canton: 'Tamarindo',
-    img: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=500&q=80',
-    date: 'hace 3 días',
-    owner: 'Roberto F.',
-    phone: '+506 8666-9012',
-    featured: true,
-    detail: 'Lote plano a 500m de la playa, zona turística con alta plusvalía.',
-  },
-  {
-    id: 4,
-    cat: 'bienes-raices',
-    sub: 'Casa',
-    op: 'Venta',
-    title: 'Villa en Manuel Antonio',
-    price: 1250000,
-    currency: 'USD',
-    province: 'Puntarenas',
-    canton: 'Quepos',
-    img: 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=500&q=80',
-    date: 'hace 5 días',
-    owner: 'Laura V.',
-    phone: '+506 8555-3456',
-    featured: true,
-    detail: 'Villa de lujo 650m², 5 hab, 4 baños, piscina, vista al mar.',
-  },
-  {
-    id: 5,
-    cat: 'vehiculos',
-    sub: 'Sedan',
-    op: 'Venta',
-    title: 'Toyota Corolla 2021',
-    price: 18500,
-    currency: 'USD',
-    province: 'San José',
-    canton: 'San José',
-    img: 'https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?w=500&q=80',
-    date: 'hace 1 día',
-    owner: 'Marco S.',
-    phone: '+506 8444-7890',
-    featured: true,
-    detail: '42,000 km, automático, A/C, revisión técnica al día, único dueño.',
-  },
-  {
-    id: 6,
-    cat: 'vehiculos',
-    sub: 'SUV',
-    op: 'Venta',
-    title: 'Hyundai Tucson 2020',
-    price: 22000,
-    currency: 'USD',
-    province: 'Alajuela',
-    canton: 'Alajuela',
-    img: 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=500&q=80',
-    date: 'hace 4 días',
-    owner: 'Diego Q.',
-    phone: '+506 8333-2345',
-    featured: false,
-    detail: '55,000 km, full equipo, cámara de retroceso, airbags, excelente condición.',
-  },
-  {
-    id: 7,
-    cat: 'vehiculos',
-    sub: 'Pickup',
-    op: 'Venta',
-    title: 'Toyota Hilux 2019 4x4',
-    price: 28000,
-    currency: 'USD',
-    province: 'Cartago',
-    canton: 'Cartago',
-    img: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=500&q=80',
-    date: 'hace 2 días',
-    owner: 'Gabriela M.',
-    phone: '+506 8222-6789',
-    featured: false,
-    detail: '68,000 km, diesel, doble cabina, excelente para campo y ciudad.',
-  },
-  {
-    id: 8,
-    cat: 'vehiculos',
-    sub: 'Moto',
-    op: 'Venta',
-    title: 'Honda CB500 2022',
-    price: 6200,
-    currency: 'USD',
-    province: 'Heredia',
-    canton: 'Heredia',
-    img: 'https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=500&q=80',
-    date: 'hace 6 días',
-    owner: 'Andrés P.',
-    phone: '+506 8111-0123',
-    featured: false,
-    detail: '12,000 km, perfectas condiciones, papeles al día, casco incluido.',
-  },
-  {
-    id: 9,
-    cat: 'empleos',
-    sub: 'Tecnología',
-    op: 'Tiempo completo',
-    title: 'Desarrollador React Senior',
-    price: 2500,
-    currency: 'USD',
-    province: 'San José',
-    canton: 'Escazú',
-    img: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=500&q=80',
-    date: 'hace 1 día',
-    owner: 'TechCorp CR',
-    phone: '+506 2200-1111',
-    featured: true,
-    detail: '3+ años experiencia React, remoto/híbrido, excelentes beneficios, seguro médico.',
-  },
-  {
-    id: 10,
-    cat: 'empleos',
-    sub: 'Ventas',
-    op: 'Tiempo completo',
-    title: 'Ejecutivo de Ventas B2B',
-    price: 1200,
-    currency: 'USD',
-    province: 'San José',
-    canton: 'San José',
-    img: 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=500&q=80',
-    date: 'hace 2 días',
-    owner: 'Soldi Enterprises',
-    phone: '+506 2200-2222',
-    featured: false,
-    detail: 'Base + comisiones, cartera de clientes, vehículo de empresa, experiencia en ventas.',
-  },
-  {
-    id: 11,
-    cat: 'empleos',
-    sub: 'Turismo',
-    op: 'Medio tiempo',
-    title: 'Guía Turístico Bilingüe',
-    price: 800,
-    currency: 'USD',
-    province: 'Guanacaste',
-    canton: 'Liberia',
-    img: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=500&q=80',
-    date: 'hace 3 días',
-    owner: 'Aventuras CR',
-    phone: '+506 2200-3333',
-    featured: false,
-    detail: 'Inglés avanzado requerido, conocimiento de flora/fauna, propinas incluidas.',
-  },
-  {
-    id: 12,
-    cat: 'empleos',
-    sub: 'Administración',
-    op: 'Tiempo completo',
-    title: 'Asistente Administrativo',
-    price: 700,
-    currency: 'USD',
-    province: 'Alajuela',
-    canton: 'Alajuela',
-    img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=500&q=80',
-    date: 'hace 5 días',
-    owner: 'Grupo Mora S.A.',
-    phone: '+506 2200-4444',
-    featured: false,
-    detail: 'Manejo de Office, atención al cliente, horario 8-5, zona franca.',
-  },
+  { id: 1, cat: 'bienes-raices', sub: 'Casa', op: 'Venta', title: 'Casa en Escazú, 3 hab', price: 485000, currency: 'USD', province: 'San José', canton: 'Escazú', img: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=500&q=80', date: 'hace 2 días', owner: 'Carlos M.', phone: '+506 8888-1234', featured: true, detail: 'Casa de 320m² en zona residencial, 3 hab, 2 baños, cochera doble, jardín.' },
+  { id: 2, cat: 'bienes-raices', sub: 'Apartamento', op: 'Alquiler', title: 'Apto en Heredia, 2 hab', price: 750, currency: 'USD', province: 'Heredia', canton: 'Heredia', img: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=500&q=80', date: 'hace 1 día', owner: 'Sofía C.', phone: '+506 8777-5678', featured: false, detail: 'Apartamento moderno, 85m², 2 hab, 1 baño, incluye agua y cable.' },
+  { id: 3, cat: 'bienes-raices', sub: 'Lote', op: 'Venta', title: 'Lote en Tamarindo 1200m²', price: 95000, currency: 'USD', province: 'Guanacaste', canton: 'Tamarindo', img: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=500&q=80', date: 'hace 3 días', owner: 'Roberto F.', phone: '+506 8666-9012', featured: true, detail: 'Lote plano a 500m de la playa, zona turística con alta plusvalía.' },
+  { id: 4, cat: 'bienes-raices', sub: 'Casa', op: 'Venta', title: 'Villa en Manuel Antonio', price: 1250000, currency: 'USD', province: 'Puntarenas', canton: 'Quepos', img: 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=500&q=80', date: 'hace 5 días', owner: 'Laura V.', phone: '+506 8555-3456', featured: true, detail: 'Villa de lujo 650m², 5 hab, 4 baños, piscina, vista al mar.' },
+  { id: 5, cat: 'vehiculos', sub: 'Sedan', op: 'Venta', title: 'Toyota Corolla 2021', price: 18500, currency: 'USD', province: 'San José', canton: 'San José', img: 'https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?w=500&q=80', date: 'hace 1 día', owner: 'Marco S.', phone: '+506 8444-7890', featured: true, detail: '42,000 km, automático, A/C, revisión técnica al día, único dueño.' },
+  { id: 6, cat: 'vehiculos', sub: 'SUV', op: 'Venta', title: 'Hyundai Tucson 2020', price: 22000, currency: 'USD', province: 'Alajuela', canton: 'Alajuela', img: 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=500&q=80', date: 'hace 4 días', owner: 'Diego Q.', phone: '+506 8333-2345', featured: false, detail: '55,000 km, full equipo, cámara de retroceso, airbags, excelente condición.' },
+  { id: 7, cat: 'vehiculos', sub: 'Pickup', op: 'Venta', title: 'Toyota Hilux 2019 4x4', price: 28000, currency: 'USD', province: 'Cartago', canton: 'Cartago', img: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=500&q=80', date: 'hace 2 días', owner: 'Gabriela M.', phone: '+506 8222-6789', featured: false, detail: '68,000 km, diesel, doble cabina, excelente para campo y ciudad.' },
+  { id: 8, cat: 'vehiculos', sub: 'Moto', op: 'Venta', title: 'Honda CB500 2022', price: 6200, currency: 'USD', province: 'Heredia', canton: 'Heredia', img: 'https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=500&q=80', date: 'hace 6 días', owner: 'Andrés P.', phone: '+506 8111-0123', featured: false, detail: '12,000 km, perfectas condiciones, papeles al día, casco incluido.' },
+  { id: 9, cat: 'empleos', sub: 'Tecnología', op: 'Tiempo completo', title: 'Desarrollador React Senior', price: 2500, currency: 'USD', province: 'San José', canton: 'Escazú', img: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=500&q=80', date: 'hace 1 día', owner: 'TechCorp CR', phone: '+506 2200-1111', featured: true, detail: '3+ años experiencia React, remoto/híbrido, excelentes beneficios, seguro médico.' },
+  { id: 10, cat: 'empleos', sub: 'Ventas', op: 'Tiempo completo', title: 'Ejecutivo de Ventas B2B', price: 1200, currency: 'USD', province: 'San José', canton: 'San José', img: 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=500&q=80', date: 'hace 2 días', owner: 'Soldi Enterprises', phone: '+506 2200-2222', featured: false, detail: 'Base + comisiones, cartera de clientes, vehículo de empresa, experiencia en ventas.' },
+  { id: 11, cat: 'empleos', sub: 'Turismo', op: 'Medio tiempo', title: 'Guía Turístico Bilingüe', price: 800, currency: 'USD', province: 'Guanacaste', canton: 'Liberia', img: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=500&q=80', date: 'hace 3 días', owner: 'Aventuras CR', phone: '+506 2200-3333', featured: false, detail: 'Inglés avanzado requerido, conocimiento de flora/fauna, propinas incluidas.' },
+  { id: 12, cat: 'empleos', sub: 'Administración', op: 'Tiempo completo', title: 'Asistente Administrativo', price: 700, currency: 'USD', province: 'Alajuela', canton: 'Alajuela', img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=500&q=80', date: 'hace 5 días', owner: 'Grupo Mora S.A.', phone: '+506 2200-4444', featured: false, detail: 'Manejo de Office, atención al cliente, horario 8-5, zona franca.' },
 ];
 
 const CATS = [
@@ -219,51 +26,27 @@ const CATS = [
 const PROVINCES = ['Todas', 'San José', 'Alajuela', 'Heredia', 'Cartago', 'Guanacaste', 'Puntarenas', 'Limón'];
 
 const FORM_CATS = {
-  'bienes-raices': {
-    label: 'Bienes Raíces',
-    subs: ['Casa', 'Apartamento', 'Lote', 'Local Comercial', 'Finca'],
-    ops: ['Venta', 'Alquiler'],
-    pricePlaceholder: '250000',
-    priceLabel: 'Precio (USD)',
-  },
-  vehiculos: {
-    label: 'Vehículos',
-    subs: ['Sedan', 'SUV', 'Pickup', 'Moto', 'Otro'],
-    ops: ['Venta'],
-    pricePlaceholder: '15000',
-    priceLabel: 'Precio (USD)',
-  },
-  empleos: {
-    label: 'Empleos',
-    subs: ['Tecnología', 'Ventas', 'Turismo', 'Administración', 'Otro'],
-    ops: ['Tiempo completo', 'Medio tiempo', 'Por proyecto'],
-    pricePlaceholder: '1000',
-    priceLabel: 'Salario mensual (USD)',
-  },
+  'bienes-raices': { label: 'Bienes Raíces', subs: ['Casa', 'Apartamento', 'Lote', 'Local Comercial', 'Finca'], ops: ['Venta', 'Alquiler'], pricePlaceholder: '250000', priceLabel: 'Precio' },
+  vehiculos: { label: 'Vehículos', subs: ['Sedan', 'SUV', 'Pickup', 'Moto', 'Otro'], ops: ['Venta'], pricePlaceholder: '15000', priceLabel: 'Precio' },
+  empleos: { label: 'Empleos', subs: ['Tecnología', 'Ventas', 'Turismo', 'Administración', 'Otro'], ops: ['Tiempo completo', 'Medio tiempo', 'Por proyecto'], pricePlaceholder: '1000', priceLabel: 'Salario mensual' },
 };
 
 const S = `
 @import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=Lora:ital,wght@0,500;1,400&display=swap');
 *{box-sizing:border-box;margin:0;padding:0;}
 html,body,#root{width:100%;min-height:100vh;}
-:root{
-  --ink:#1A1A2E;--ink2:#4A4A6A;--ink3:#9090AA;
-  --bg:#F5F4F0;--white:#FFFFFF;--line:#E8E6E0;
-  --blue:#2563EB;--blue-soft:#EEF4FF;
-  --green:#059669;--green-soft:#ECFDF5;
-  --amber:#D97706;--amber-soft:#FFFBEB;
-  --red:#DC2626;
-}
+:root{--ink:#1A1A2E;--ink2:#4A4A6A;--ink3:#9090AA;--bg:#F5F4F0;--white:#FFFFFF;--line:#E8E6E0;--blue:#2563EB;--blue-soft:#EEF4FF;--green:#059669;--green-soft:#ECFDF5;--amber:#D97706;--red:#DC2626;}
 body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--ink);margin:0;padding:0;}
 .nav{position:sticky;top:0;z-index:100;background:var(--white);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 2rem;height:60px;}
 .logo{font-family:'Lora',serif;font-size:1.35rem;font-weight:500;color:var(--ink);cursor:pointer;letter-spacing:-0.3px;}
 .logo span{color:var(--blue);}
 .logo em{font-style:italic;color:var(--ink2);}
-.nav-links{display:flex;gap:0.25rem;}
+.nav-links{display:flex;gap:0.25rem;align-items:center;}
 .nav-link{padding:0.4rem 0.875rem;border-radius:6px;border:none;background:transparent;font-family:'Sora',sans-serif;font-size:0.825rem;font-weight:500;color:var(--ink2);cursor:pointer;transition:all 0.15s;}
 .nav-link:hover{background:var(--bg);color:var(--ink);}
 .nav-link.active{background:var(--ink);color:var(--white);}
-.nav-btn{padding:0.45rem 1.1rem;border-radius:7px;border:none;background:var(--blue);color:var(--white);font-family:'Sora',sans-serif;font-size:0.825rem;font-weight:600;cursor:pointer;transition:all 0.15s;display:flex;align-items:center;gap:0.4rem;}
+.nav-user{font-size:0.775rem;color:var(--ink3);padding:0 0.5rem;}
+.nav-btn{padding:0.45rem 1.1rem;border-radius:7px;border:none;background:var(--blue);color:var(--white);font-family:'Sora',sans-serif;font-size:0.825rem;font-weight:600;cursor:pointer;}
 .nav-btn:hover{opacity:0.88;}
 .hero{background:var(--ink);padding:4rem 2rem 3.5rem;text-align:center;position:relative;overflow:hidden;}
 .hero::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:40px;background:var(--bg);clip-path:ellipse(55% 100% at 50% 100%);}
@@ -275,8 +58,7 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--ink);margin:
 .search-bar{display:flex;max-width:680px;margin:0 auto;background:var(--white);border-radius:12px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,0.25);}
 .search-bar input{flex:1;border:none;outline:none;padding:0.9rem 1.25rem;font-family:'Sora',sans-serif;font-size:0.9rem;color:var(--ink);}
 .search-bar select{border:none;border-left:1px solid var(--line);outline:none;padding:0.9rem 1rem;font-family:'Sora',sans-serif;font-size:0.825rem;color:var(--ink);background:var(--bg);cursor:pointer;}
-.search-btn{padding:0.9rem 1.5rem;border:none;background:var(--blue);color:var(--white);font-family:'Sora',sans-serif;font-weight:600;font-size:0.875rem;cursor:pointer;transition:opacity 0.15s;white-space:nowrap;}
-.search-btn:hover{opacity:0.88;}
+.search-btn{padding:0.9rem 1.5rem;border:none;background:var(--blue);color:var(--white);font-family:'Sora',sans-serif;font-weight:600;font-size:0.875rem;cursor:pointer;white-space:nowrap;}
 .hero-stats{display:flex;justify-content:center;gap:3rem;margin-top:3rem;padding-bottom:1.5rem;}
 .hstat-n{font-family:'Lora',serif;font-size:1.75rem;color:var(--white);font-style:italic;}
 .hstat-l{font-size:0.7rem;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:1.2px;margin-top:2px;}
@@ -284,7 +66,6 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--ink);margin:
 .cat-tab{display:flex;align-items:center;gap:0.5rem;padding:1rem 1.25rem;border:none;background:transparent;font-family:'Sora',sans-serif;font-size:0.85rem;font-weight:500;color:var(--ink2);cursor:pointer;border-bottom:2px solid transparent;transition:all 0.15s;white-space:nowrap;}
 .cat-tab:hover{color:var(--ink);}
 .cat-tab.active{color:var(--blue);border-bottom-color:var(--blue);}
-.cat-tab .cat-icon{font-size:1rem;}
 .filters-row{padding:1rem 2rem;display:flex;gap:0.75rem;align-items:center;flex-wrap:wrap;}
 .fpill{padding:0.35rem 0.875rem;border-radius:100px;border:1.5px solid var(--line);background:transparent;font-family:'Sora',sans-serif;font-size:0.775rem;font-weight:500;color:var(--ink2);cursor:pointer;transition:all 0.12s;}
 .fpill:hover{border-color:var(--blue);color:var(--blue);}
@@ -325,11 +106,33 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--ink);margin:
 .modal-location{font-size:0.825rem;color:var(--ink3);margin-bottom:1.25rem;}
 .modal-desc{font-size:0.875rem;color:var(--ink2);line-height:1.65;padding:1.1rem;background:var(--bg);border-radius:10px;margin-bottom:1.25rem;}
 .modal-ctas{display:flex;gap:0.75rem;}
-.btn-main{flex:1;padding:0.8rem;border-radius:9px;border:none;background:var(--blue);color:var(--white);font-family:'Sora',sans-serif;font-weight:600;font-size:0.875rem;cursor:pointer;transition:opacity 0.15s;}
+.btn-main{flex:1;padding:0.8rem;border-radius:9px;border:none;background:var(--blue);color:var(--white);font-family:'Sora',sans-serif;font-weight:600;font-size:0.875rem;cursor:pointer;}
 .btn-main:hover{opacity:0.88;}
-.btn-out{padding:0.8rem 1.1rem;border-radius:9px;border:1.5px solid var(--ink);background:transparent;color:var(--ink);font-family:'Sora',sans-serif;font-weight:600;font-size:0.875rem;cursor:pointer;transition:all 0.15s;}
+.btn-out{padding:0.8rem 1.1rem;border-radius:9px;border:1.5px solid var(--ink);background:transparent;color:var(--ink);font-family:'Sora',sans-serif;font-weight:600;font-size:0.875rem;cursor:pointer;}
 .btn-out:hover{background:var(--ink);color:var(--white);}
 .close-btn{position:absolute;top:0.875rem;right:0.875rem;width:32px;height:32px;border-radius:50%;border:none;background:rgba(255,255,255,0.9);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1rem;z-index:5;}
+.auth-wrap{max-width:420px;margin:4rem auto;padding:2rem;}
+.auth-card{background:var(--white);border-radius:16px;border:1px solid var(--line);padding:2rem;}
+.auth-logo{font-family:'Lora',serif;font-size:1.5rem;font-style:italic;text-align:center;margin-bottom:0.25rem;}
+.auth-logo span{color:var(--blue);}
+.auth-sub{font-size:0.825rem;color:var(--ink3);text-align:center;margin-bottom:2rem;}
+.auth-tabs{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;margin-bottom:1.5rem;}
+.auth-tab{flex:1;padding:0.6rem;border:none;background:transparent;font-family:'Sora',sans-serif;font-size:0.825rem;font-weight:500;color:var(--ink2);cursor:pointer;}
+.auth-tab.active{background:var(--ink);color:var(--white);}
+.auth-divider{display:flex;align-items:center;gap:0.75rem;margin:1.25rem 0;color:var(--ink3);font-size:0.75rem;}
+.auth-divider::before,.auth-divider::after{content:'';flex:1;height:1px;background:var(--line);}
+.social-btn{width:100%;padding:0.75rem;border-radius:9px;border:1.5px solid var(--line);background:var(--white);font-family:'Sora',sans-serif;font-size:0.875rem;font-weight:500;color:var(--ink);cursor:not-allowed;display:flex;align-items:center;justify-content:center;gap:0.75rem;margin-bottom:0.75rem;opacity:0.55;}
+.social-badge{font-size:0.65rem;background:var(--amber);color:var(--white);padding:0.1rem 0.4rem;border-radius:4px;font-weight:700;margin-left:0.25rem;}
+.fgroup{display:flex;flex-direction:column;gap:0.35rem;margin-bottom:0.875rem;}
+.flabel{font-size:0.8rem;font-weight:500;color:var(--ink);}
+.finput,.fselect,.ftextarea{padding:0.7rem 0.9rem;border-radius:9px;border:1.5px solid var(--line);font-family:'Sora',sans-serif;font-size:0.875rem;color:var(--ink);background:var(--white);outline:none;transition:border-color 0.15s;width:100%;}
+.finput:focus,.fselect:focus,.ftextarea:focus{border-color:var(--blue);}
+.ftextarea{resize:vertical;min-height:100px;}
+.fsubmit{width:100%;padding:0.9rem;border-radius:10px;border:none;background:var(--ink);color:var(--white);font-family:'Sora',sans-serif;font-weight:700;font-size:0.95rem;cursor:pointer;margin-top:0.25rem;}
+.fsubmit:hover{background:var(--blue);}
+.fsubmit:disabled{opacity:0.6;cursor:not-allowed;}
+.auth-error{background:#FEF2F2;border:1px solid #FECACA;border-radius:8px;padding:0.75rem;font-size:0.8rem;color:var(--red);margin-bottom:0.875rem;}
+.auth-success{background:var(--green-soft);border:1px solid #6EE7B7;border-radius:8px;padding:0.75rem;font-size:0.8rem;color:var(--green);margin-bottom:0.875rem;}
 .form-wrap{max-width:680px;margin:0 auto;padding:2.5rem 2rem;}
 .form-head{margin-bottom:2rem;}
 .form-head h2{font-family:'Lora',serif;font-size:1.75rem;font-style:italic;margin-bottom:0.4rem;}
@@ -337,11 +140,6 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--ink);margin:
 .fsec{margin-bottom:1.75rem;}
 .fsec-title{font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--ink3);margin-bottom:0.875rem;padding-bottom:0.5rem;border-bottom:1px solid var(--line);}
 .fgrid{display:grid;grid-template-columns:1fr 1fr;gap:0.875rem;}
-.fgroup{display:flex;flex-direction:column;gap:0.35rem;}
-.flabel{font-size:0.8rem;font-weight:500;color:var(--ink);}
-.finput,.fselect,.ftextarea{padding:0.7rem 0.9rem;border-radius:9px;border:1.5px solid var(--line);font-family:'Sora',sans-serif;font-size:0.875rem;color:var(--ink);background:var(--white);outline:none;transition:border-color 0.15s;width:100%;}
-.finput:focus,.fselect:focus,.ftextarea:focus{border-color:var(--blue);}
-.ftextarea{resize:vertical;min-height:100px;}
 .cat-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:0.75rem;margin-bottom:1rem;}
 .cat-card{padding:1rem;border-radius:10px;border:1.5px solid var(--line);text-align:center;cursor:pointer;transition:all 0.15s;background:var(--white);}
 .cat-card:hover{border-color:var(--blue);}
@@ -350,9 +148,11 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--ink);margin:
 .cat-card-label{font-size:0.775rem;font-weight:600;color:var(--ink2);}
 .cat-card.active .cat-card-label{color:var(--blue);}
 .upload-zone{border:2px dashed var(--line);border-radius:10px;padding:2rem;text-align:center;color:var(--ink3);cursor:pointer;transition:all 0.15s;}
-.upload-zone:hover{border-color:var(--blue);color:var(--blue);}
-.fsubmit{width:100%;padding:0.9rem;border-radius:10px;border:none;background:var(--ink);color:var(--white);font-family:'Sora',sans-serif;font-weight:700;font-size:0.95rem;cursor:pointer;transition:background 0.15s;margin-top:0.5rem;}
-.fsubmit:hover{background:var(--blue);}
+.upload-zone:hover,.upload-zone.drag{border-color:var(--blue);color:var(--blue);background:var(--blue-soft);}
+.upload-previews{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:0.5rem;margin-top:0.75rem;}
+.upload-preview{position:relative;height:80px;border-radius:8px;overflow:hidden;}
+.upload-preview img{width:100%;height:100%;object-fit:cover;}
+.upload-preview-rm{position:absolute;top:2px;right:2px;width:20px;height:20px;border-radius:50%;border:none;background:rgba(0,0,0,0.6);color:white;font-size:0.6rem;cursor:pointer;display:flex;align-items:center;justify-content:center;}
 .success-box{background:var(--green-soft);border:1.5px solid #6EE7B7;border-radius:14px;padding:2.5rem;text-align:center;}
 .success-box h3{font-family:'Lora',serif;font-size:1.5rem;font-style:italic;color:var(--green);margin-bottom:0.5rem;}
 .success-box p{font-size:0.875rem;color:#047857;line-height:1.6;}
@@ -381,21 +181,17 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--ink);margin:
 .dot{width:7px;height:7px;border-radius:50%;}
 .dot-active{background:var(--green);}
 .dot-paused{background:var(--amber);}
-.act-btn{padding:0.3rem 0.65rem;border-radius:5px;border:1px solid var(--line);background:transparent;font-size:0.72rem;cursor:pointer;color:var(--ink3);transition:all 0.12s;}
+.act-btn{padding:0.3rem 0.65rem;border-radius:5px;border:1px solid var(--line);background:transparent;font-size:0.72rem;cursor:pointer;color:var(--ink3);}
 .act-btn:hover{border-color:var(--red);color:var(--red);}
 .cat-pill{display:inline-block;padding:0.2rem 0.6rem;border-radius:100px;font-size:0.7rem;font-weight:600;}
 .cpill-br{background:var(--blue-soft);color:var(--blue);}
 .cpill-veh{background:#F3E8FF;color:#7C3AED;}
 .cpill-emp{background:var(--green-soft);color:var(--green);}
-.login-wrap{max-width:400px;margin:4rem auto;padding:2rem;background:var(--white);border-radius:14px;border:1px solid var(--line);}
-.login-wrap h2{font-family:'Lora',serif;font-size:1.5rem;font-style:italic;margin-bottom:1.5rem;color:var(--ink);}
-.auth-error{color:var(--red);font-size:0.8rem;margin-bottom:0.75rem;}
 `;
 
 const catBadgeClass = (c) => c === 'bienes-raices' ? 'badge-br' : c === 'vehiculos' ? 'badge-veh' : 'badge-emp';
 const catLabel = (c) => c === 'bienes-raices' ? 'Bienes Raíces' : c === 'vehiculos' ? 'Vehículos' : 'Empleos';
 const pillClass = (c) => c === 'bienes-raices' ? 'cpill-br' : c === 'vehiculos' ? 'cpill-veh' : 'cpill-emp';
-
 const fmtPrice = (p, cur, op) => {
   const n = p >= 1000 ? `${(p / 1000).toFixed(p % 1000 === 0 ? 0 : 1)}K` : p.toLocaleString();
   const suffix = op === 'Alquiler' ? '/mes' : op === 'Medio tiempo' || op === 'Tiempo completo' ? '/mes' : '';
@@ -436,11 +232,7 @@ const Modal = ({ l, onClose }) => {
             <span className={`badge ${catBadgeClass(l.cat)}`} style={{ position: 'static' }}>{l.sub}</span>
             <span className="badge" style={{ position: 'static', background: 'var(--bg)', color: 'var(--ink2)' }}>{l.op}</span>
           </div>
-          <div className="modal-price">
-            <sup style={{ fontFamily: 'Sora', fontStyle: 'normal', fontSize: '1rem' }}>$</sup>
-            {n}
-            <sub style={{ fontFamily: 'Sora', fontStyle: 'normal', fontSize: '0.8rem' }}> {l.currency}{suffix}</sub>
-          </div>
+          <div className="modal-price"><sup style={{ fontFamily: 'Sora', fontStyle: 'normal', fontSize: '1rem' }}>$</sup>{n}<sub style={{ fontFamily: 'Sora', fontStyle: 'normal', fontSize: '0.8rem' }}> {l.currency}{suffix}</sub></div>
           <div className="modal-title">{l.title}</div>
           <div className="modal-location">📍 {l.canton}, {l.province} · Publicado por {l.owner} · {l.date}</div>
           <div className="modal-desc">{l.detail}</div>
@@ -463,11 +255,10 @@ const HomeView = ({ onNav }) => {
 
   const filtered = LISTINGS.filter((l) => {
     const q = search.toLowerCase();
-    const matchQ = !q || l.title.toLowerCase().includes(q) || l.canton.toLowerCase().includes(q) || l.province.toLowerCase().includes(q);
-    const matchC = cat === 'todos' || l.cat === cat;
-    const matchP = prov === 'Todas' || l.province === prov;
-    const matchO = op === 'todos' || l.op === op;
-    return matchQ && matchC && matchP && matchO;
+    return (!q || l.title.toLowerCase().includes(q) || l.canton.toLowerCase().includes(q) || l.province.toLowerCase().includes(q))
+      && (cat === 'todos' || l.cat === cat)
+      && (prov === 'Todas' || l.province === prov)
+      && (op === 'todos' || l.op === op);
   });
 
   const ops = cat === 'bienes-raices' ? ['todos', 'Venta', 'Alquiler'] : cat === 'empleos' ? ['todos', 'Tiempo completo', 'Medio tiempo', 'Por proyecto'] : cat === 'vehiculos' ? ['todos', 'Venta'] : ['todos'];
@@ -480,9 +271,7 @@ const HomeView = ({ onNav }) => {
         <p className="hero-sub">Bienes raíces, vehículos y empleos. Todo en un solo lugar, ordenado y fácil.</p>
         <div className="search-bar">
           <input placeholder="¿Qué estás buscando?" value={search} onChange={(e) => setSearch(e.target.value)} />
-          <select value={prov} onChange={(e) => setProv(e.target.value)}>
-            {PROVINCES.map((p) => <option key={p}>{p}</option>)}
-          </select>
+          <select value={prov} onChange={(e) => setProv(e.target.value)}>{PROVINCES.map((p) => <option key={p}>{p}</option>)}</select>
           <button className="search-btn">Buscar</button>
         </div>
         <div className="hero-stats">
@@ -491,56 +280,134 @@ const HomeView = ({ onNav }) => {
           <div><div className="hstat-n">3</div><div className="hstat-l">Categorías</div></div>
         </div>
       </div>
-
       <div className="cat-bar">
         {CATS.map((c) => (
           <button key={c.id} className={`cat-tab ${cat === c.id ? 'active' : ''}`} onClick={() => { setCat(c.id); setOp('todos'); }}>
-            <span className="cat-icon">{c.icon}</span>{c.label}
+            <span>{c.icon}</span>{c.label}
           </button>
         ))}
       </div>
-
       <div className="filters-row">
-        {ops.map((o) => (
-          <button key={o} className={`fpill ${op === o ? 'active' : ''}`} onClick={() => setOp(o)}>
-            {o === 'todos' ? 'Todos' : o}
-          </button>
-        ))}
-        <select className="fsel" value={prov} onChange={(e) => setProv(e.target.value)}>
-          {PROVINCES.map((p) => <option key={p}>{p}</option>)}
-        </select>
+        {ops.map((o) => <button key={o} className={`fpill ${op === o ? 'active' : ''}`} onClick={() => setOp(o)}>{o === 'todos' ? 'Todos' : o}</button>)}
+        <select className="fsel" value={prov} onChange={(e) => setProv(e.target.value)}>{PROVINCES.map((p) => <option key={p}>{p}</option>)}</select>
         <span className="fcount">{filtered.length} anuncios</span>
       </div>
-
       <div className="grid-section">
         <div className="grid-header">
           <h2 className="grid-title">{cat === 'todos' ? 'Todos los anuncios' : CATS.find((c) => c.id === cat)?.label}</h2>
           <span style={{ fontSize: '0.8rem', color: 'var(--ink3)' }}>{filtered.length} resultado{filtered.length !== 1 ? 's' : ''}</span>
         </div>
-        {filtered.length > 0 ? (
-          <div className="grid">{filtered.map((l) => <Card key={l.id} l={l} onClick={setSelected} />)}</div>
-        ) : (
-          <div style={{ textAlign: 'center', padding: '4rem', color: 'var(--ink3)' }}>No hay anuncios con esos filtros.</div>
-        )}
+        {filtered.length > 0
+          ? <div className="grid">{filtered.map((l) => <Card key={l.id} l={l} onClick={setSelected} />)}</div>
+          : <div style={{ textAlign: 'center', padding: '4rem', color: 'var(--ink3)' }}>No hay anuncios con esos filtros.</div>
+        }
       </div>
       {selected && <Modal l={selected} onClose={() => setSelected(null)} />}
     </>
   );
 };
 
-const PublishView = ({ onNav }) => {
+const AuthView = ({ onAuth, defaultTab = 'login' }) => {
+  const [tab, setTab] = useState(defaultTab);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [name, setName] = useState('');
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const login = async () => {
+    if (!email || !password) return setError('Completá todos los campos.');
+    setLoading(true); setError('');
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    setLoading(false);
+    if (error) setError('Correo o contraseña incorrectos.');
+    else onAuth();
+  };
+
+  const register = async () => {
+    if (!email || !password || !name) return setError('Completá todos los campos.');
+    if (password.length < 6) return setError('La contraseña debe tener al menos 6 caracteres.');
+    setLoading(true); setError('');
+    const { error } = await supabase.auth.signUp({ email, password, options: { data: { full_name: name } } });
+    setLoading(false);
+    if (error) setError(error.message);
+    else setSuccess('¡Cuenta creada! Revisá tu correo para confirmar y luego iniciá sesión.');
+  };
+
+  return (
+    <div className="auth-wrap">
+      <div className="auth-card">
+        <div className="auth-logo">Anuncia<span>cr</span>.com</div>
+        <div className="auth-sub">Para publicar necesitás una cuenta gratis</div>
+        <div className="auth-tabs">
+          <button className={`auth-tab ${tab === 'login' ? 'active' : ''}`} onClick={() => { setTab('login'); setError(''); setSuccess(''); }}>Iniciar sesión</button>
+          <button className={`auth-tab ${tab === 'register' ? 'active' : ''}`} onClick={() => { setTab('register'); setError(''); setSuccess(''); }}>Crear cuenta</button>
+        </div>
+        <button className="social-btn" disabled>G — Continuar con Google <span className="social-badge">Próximamente</span></button>
+        <button className="social-btn" disabled>f — Continuar con Facebook <span className="social-badge">Próximamente</span></button>
+        <div className="auth-divider">o con tu correo</div>
+        {error && <div className="auth-error">{error}</div>}
+        {success && <div className="auth-success">{success}</div>}
+        {tab === 'register' && (
+          <div className="fgroup">
+            <label className="flabel">Nombre completo</label>
+            <input className="finput" placeholder="Juan Pérez" value={name} onChange={(e) => setName(e.target.value)} />
+          </div>
+        )}
+        <div className="fgroup">
+          <label className="flabel">Correo electrónico</label>
+          <input className="finput" type="email" placeholder="tu@correo.com" value={email} onChange={(e) => setEmail(e.target.value)} />
+        </div>
+        <div className="fgroup">
+          <label className="flabel">Contraseña</label>
+          <input className="finput" type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && (tab === 'login' ? login() : register())} />
+        </div>
+        <button className="fsubmit" onClick={tab === 'login' ? login : register} disabled={loading}>
+          {loading ? 'Procesando...' : tab === 'login' ? 'Iniciar sesión' : 'Crear cuenta gratis'}
+        </button>
+      </div>
+    </div>
+  );
+};
+
+const PublishView = ({ user, onNav }) => {
   const [cat, setCat] = useState('');
-  const [form, setForm] = useState({ sub: '', op: '', title: '', price: '', province: 'San José', canton: '', desc: '', phone: '', email: '' });
-  const [done, setDone] = useState(false); const [loading, setLoading] = useState(false); const [error, setError] = useState('');
+  const [form, setForm] = useState({ sub: '', op: '', title: '', price: '', currency: 'USD', province: 'San José', canton: '', desc: '', phone: '', email: user?.email || '' });
+  const [done, setDone] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [drag, setDrag] = useState(false);
+  const [photos, setPhotos] = useState([]);
   const set = (k, v) => setForm((f) => ({ ...f, [k]: v }));
   const cfg = cat ? FORM_CATS[cat] : null;
+
+  const handleFiles = (files) => {
+    const newPhotos = Array.from(files).slice(0, 10 - photos.length).map(f => ({ file: f, url: URL.createObjectURL(f) }));
+    setPhotos(p => [...p, ...newPhotos]);
+  };
+
+  const submit = async () => {
+    if (!cat || !form.title || !form.price || !form.canton) return setError('Completá los campos obligatorios: categoría, título, precio y cantón.');
+    setLoading(true); setError('');
+    const { error } = await supabase.from('listings').insert({
+      title: form.title, cat, sub: form.sub, op: form.op,
+      price: parseFloat(form.price), currency: form.currency,
+      province: form.province, canton: form.canton,
+      description: form.desc, phone: form.phone, email: form.email,
+      status: 'activo', featured: false, user_id: user.id,
+    });
+    setLoading(false);
+    if (error) setError('Error al publicar: ' + error.message);
+    else setDone(true);
+  };
 
   if (done) return (
     <div className="form-wrap">
       <div className="success-box">
         <div style={{ fontSize: '2.5rem', marginBottom: '0.75rem' }}>✅</div>
         <h3>¡Anuncio publicado!</h3>
-        <p>Tu anuncio ya está visible en Anunciacr.com.<br />Los interesados te contactarán directamente por teléfono o WhatsApp.</p>
+        <p>Tu anuncio ya está visible en Anunciacr.com.<br />Los interesados te contactarán directamente.</p>
         <button className="btn-main" style={{ maxWidth: 240, margin: '1.5rem auto 0', display: 'flex', justifyContent: 'center' }} onClick={() => { setDone(false); onNav('home'); }}>Ver anuncios →</button>
       </div>
     </div>
@@ -553,7 +420,7 @@ const PublishView = ({ onNav }) => {
         <p>Gratis. Sin comisiones. Tu anuncio llega a miles de personas en Costa Rica.</p>
       </div>
       <div className="fsec">
-        <div className="fsec-title">¿Qué vas a anunciar?</div>
+        <div className="fsec-title">¿Qué vas a anunciar? *</div>
         <div className="cat-cards">
           {Object.entries(FORM_CATS).map(([id, c]) => (
             <div key={id} className={`cat-card ${cat === id ? 'active' : ''}`} onClick={() => { setCat(id); set('sub', ''); set('op', ''); }}>
@@ -585,38 +452,63 @@ const PublishView = ({ onNav }) => {
                 </div>
               </div>
               <div className="fgroup">
-                <label className="flabel">Título del anuncio</label>
+                <label className="flabel">Título *</label>
                 <input className="finput" placeholder={`Ej: ${cfg.subs[0]} en San José...`} value={form.title} onChange={(e) => set('title', e.target.value)} />
               </div>
               <div className="fgrid">
                 <div className="fgroup">
-                  <label className="flabel">{cfg.priceLabel}</label>
+                  <label className="flabel">{cfg.priceLabel} *</label>
                   <input className="finput" type="number" placeholder={cfg.pricePlaceholder} value={form.price} onChange={(e) => set('price', e.target.value)} />
                 </div>
+                <div className="fgroup">
+                  <label className="flabel">Moneda</label>
+                  <select className="fselect" value={form.currency} onChange={(e) => set('currency', e.target.value)}>
+                    <option value="USD">USD — Dólares</option>
+                    <option value="CRC">CRC — Colones</option>
+                  </select>
+                </div>
+              </div>
+              <div className="fgrid">
                 <div className="fgroup">
                   <label className="flabel">Provincia</label>
                   <select className="fselect" value={form.province} onChange={(e) => set('province', e.target.value)}>
                     {PROVINCES.slice(1).map((p) => <option key={p}>{p}</option>)}
                   </select>
                 </div>
-              </div>
-              <div className="fgroup">
-                <label className="flabel">Cantón / Zona</label>
-                <input className="finput" placeholder="Ej: Escazú, Rohrmoser, Liberia..." value={form.canton} onChange={(e) => set('canton', e.target.value)} />
+                <div className="fgroup">
+                  <label className="flabel">Cantón / Zona *</label>
+                  <input className="finput" placeholder="Ej: Escazú, Liberia..." value={form.canton} onChange={(e) => set('canton', e.target.value)} />
+                </div>
               </div>
               <div className="fgroup">
                 <label className="flabel">Descripción</label>
-                <textarea className="ftextarea" placeholder="Describe los detalles más importantes del anuncio..." value={form.desc} onChange={(e) => set('desc', e.target.value)} />
+                <textarea className="ftextarea" placeholder="Describe los detalles más importantes..." value={form.desc} onChange={(e) => set('desc', e.target.value)} />
               </div>
             </div>
           </div>
           <div className="fsec">
-            <div className="fsec-title">Fotos</div>
-            <div className="upload-zone">
+            <div className="fsec-title">Fotos ({photos.length}/10)</div>
+            <div
+              className={`upload-zone ${drag ? 'drag' : ''}`}
+              onDragOver={(e) => { e.preventDefault(); setDrag(true); }}
+              onDragLeave={() => setDrag(false)}
+              onDrop={(e) => { e.preventDefault(); setDrag(false); handleFiles(e.dataTransfer.files); }}
+              onClick={() => { const i = document.createElement('input'); i.type = 'file'; i.multiple = true; i.accept = 'image/*'; i.onchange = (e) => handleFiles(e.target.files); i.click(); }}
+            >
               <div style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>↑</div>
-              <div style={{ fontWeight: 500, fontSize: '0.875rem' }}>Subir fotos</div>
+              <div style={{ fontWeight: 500, fontSize: '0.875rem' }}>Arrastrá fotos aquí o hacé click para subir</div>
               <div style={{ fontSize: '0.775rem', marginTop: '0.25rem' }}>JPG, PNG · hasta 10 fotos</div>
             </div>
+            {photos.length > 0 && (
+              <div className="upload-previews">
+                {photos.map((p, i) => (
+                  <div key={i} className="upload-preview">
+                    <img src={p.url} alt="" />
+                    <button className="upload-preview-rm" onClick={() => setPhotos(ph => ph.filter((_, j) => j !== i))}>✕</button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
           <div className="fsec">
             <div className="fsec-title">Datos de contacto</div>
@@ -631,8 +523,9 @@ const PublishView = ({ onNav }) => {
               </div>
             </div>
           </div>
-          <button className="fsubmit" onClick={async () => {   if (!form.title || !form.price || !form.canton) return;   setLoading(true);   const { error } = await supabase.from('listings').insert({     title: form.title, cat, sub: form.sub, op: form.op,     price: parseFloat(form.price), currency: 'USD',     province: form.province, canton: form.canton,     description: form.desc, phone: form.phone, email: form.email,     status: 'activo', featured: false,   });   setLoading(false);   if (error) setError('Error al publicar. Intenta de nuevo.');   else setDone(true); }}disabled={loading}>{loading ? 'Publicando...' : 'Publicar anuncio gratis'}</button>
-          <p style={{ textAlign: 'center', fontSize: '0.75rem', color: 'var(--ink3)', marginTop: '0.75rem' }}>Al publicar aceptás los Términos de Uso. Publicación básica gratuita.</p>
+          {error && <div className="auth-error">{error}</div>}
+          <button className="fsubmit" onClick={submit} disabled={loading}>{loading ? 'Publicando...' : 'Publicar anuncio gratis'}</button>
+          <p style={{ textAlign: 'center', fontSize: '0.75rem', color: 'var(--ink3)', marginTop: '0.75rem' }}>Al publicar aceptás los Términos de Uso.</p>
         </>
       )}
     </div>
@@ -655,10 +548,7 @@ const AdminView = () => {
         ))}
       </div>
       <div className="admin-main">
-        <div className="admin-head">
-          <h2>Dashboard</h2>
-          <p>Resumen de actividad — Anunciacr.com</p>
-        </div>
+        <div className="admin-head"><h2>Dashboard</h2><p>Resumen de actividad — Anunciacr.com</p></div>
         <div className="kpis">
           <div className="kpi"><div className="kpi-l">Total anuncios</div><div className="kpi-v">{total}</div><div className="kpi-d">↑ +4 esta semana</div></div>
           <div className="kpi"><div className="kpi-l">Bienes Raíces</div><div className="kpi-v">{br}</div><div className="kpi-d">{Math.round((br / total) * 100)}% del total</div></div>
@@ -688,58 +578,29 @@ const AdminView = () => {
   );
 };
 
-const LoginView = ({ onLogin }) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
-
-  const login = async () => {
-    setLoading(true);
-    setError('');
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) {
-      setError('Correo o contraseña incorrectos.');
-    } else {
-      onLogin();
-    }
-    setLoading(false);
-  };
-
-  return (
-    <div className="login-wrap">
-      <h2>Acceso Admin</h2>
-      <div className="fgroup" style={{ marginBottom: '0.75rem' }}>
-        <label className="flabel">Correo electrónico</label>
-        <input className="finput" type="email" placeholder="tu@correo.com" value={email} onChange={(e) => setEmail(e.target.value)} />
-      </div>
-      <div className="fgroup" style={{ marginBottom: '0.75rem' }}>
-        <label className="flabel">Contraseña</label>
-        <input className="finput" type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} />
-      </div>
-      {error && <p className="auth-error">{error}</p>}
-      <button className="fsubmit" onClick={login} disabled={loading}>{loading ? 'Entrando...' : 'Entrar'}</button>
-    </div>
-  );
-};
-
 export default function App() {
   const [view, setView] = useState('home');
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  supabase.auth.getSession().then(({ data: { session } }) => {
-    setUser(session?.user ?? null);
-  });
-
-  supabase.auth.onAuthStateChange((_event, session) => {
-    setUser(session?.user ?? null);
-  });
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+      setLoading(false);
+    });
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+    return () => subscription.unsubscribe();
+  }, []);
 
   const logout = async () => {
     await supabase.auth.signOut();
     setUser(null);
     setView('home');
   };
+
+  if (loading) return <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', fontFamily: 'sans-serif', color: '#9090AA' }}>Cargando...</div>;
 
   return (
     <>
@@ -751,18 +612,19 @@ export default function App() {
           {user ? (
             <>
               <button className={`nav-link ${view === 'admin' ? 'active' : ''}`} onClick={() => setView('admin')}>Admin</button>
+              <span className="nav-user">{user.email?.split('@')[0]}</span>
               <button className="nav-link" onClick={logout}>Salir</button>
             </>
           ) : (
-            <button className="nav-link" onClick={() => setView('login')}>Admin</button>
+            <button className="nav-link" onClick={() => setView('auth')}>Iniciar sesión</button>
           )}
         </div>
-        <button className="nav-btn" onClick={() => setView('publish')}>+ Publicar gratis</button>
+        <button className="nav-btn" onClick={() => user ? setView('publish') : setView('auth')}>+ Publicar gratis</button>
       </nav>
       {view === 'home' && <HomeView onNav={setView} />}
-      {view === 'publish' && <PublishView onNav={setView} />}
-      {view === 'login' && <LoginView onLogin={() => setView('admin')} />}
-      {view === 'admin' && (user ? <AdminView /> : <LoginView onLogin={() => setView('admin')} />)}
+      {view === 'auth' && <AuthView onAuth={() => setView('publish')} />}
+      {view === 'publish' && (user ? <PublishView user={user} onNav={setView} /> : <AuthView onAuth={() => setView('publish')} />)}
+      {view === 'admin' && (user ? <AdminView /> : <AuthView onAuth={() => setView('admin')} />)}
     </>
   );
 }
