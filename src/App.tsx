@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState } from 'react';export default function App() {
+  const [view, setView] = useState('home');
 
 // ─── MOCK DATA ────────────────────────────────────────────────────────────────
 const LISTINGS = [
