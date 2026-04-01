@@ -382,7 +382,8 @@ const PublishView = ({ user, onNav }) => {
   const set = (k, v) => setForm((f) => ({ ...f, [k]: v }));
   const cfg = cat ? FORM_CATS[cat] : null;
 
-  const handleFiles = (files) => {
+  const // eslint-disable-next-line @typescript-eslint/no-explicit-any
+const handleFiles = (files: any) => {
     const newPhotos = Array.from(files).slice(0, 10 - photos.length).map(f => ({ file: f, url: URL.createObjectURL(f) }));
     setPhotos(p => [...p, ...newPhotos]);
   };
@@ -492,8 +493,8 @@ const PublishView = ({ user, onNav }) => {
               className={`upload-zone ${drag ? 'drag' : ''}`}
               onDragOver={(e) => { e.preventDefault(); setDrag(true); }}
               onDragLeave={() => setDrag(false)}
-              onDrop={(e) => { e.preventDefault(); setDrag(false); const f = e.dataTransfer.files; if (f) handleFiles(f); }}
-onClick={() => { const i = document.createElement('input'); i.type = 'file'; i.multiple = true; i.accept = 'image/*'; i.onchange = (e) => { const f = (e.target as HTMLInputElement).files; if (f) handleFiles(f); }; i.click(); }}
+              onDrop={(e: any) => { e.preventDefault(); setDrag(false); handleFiles(e.dataTransfer.files); }}
+onClick={() => { const i = document.createElement('input'); i.type = 'file'; i.multiple = true; i.accept = 'image/*'; i.onchange = (e: any) => handleFiles(e.target.files); i.click(); }}
             >
               <div style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>↑</div>
               <div style={{ fontWeight: 500, fontSize: '0.875rem' }}>Arrastrá fotos aquí o hacé click para subir</div>
