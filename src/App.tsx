@@ -11,7 +11,7 @@ const LISTINGS = [
     title: 'Casa en Escazú, 3 hab',
     price: 485000,
     currency: 'USD',
-    province: 'San José',
+    province: 'San José'
     canton: 'Escazú',
     img: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=500&q=80',
     date: 'hace 2 días',
